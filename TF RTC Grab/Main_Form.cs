@@ -262,8 +262,6 @@ namespace TF_RTC_Grab
                             label_status.Text = "-";
                             label_player_last_registered.Text = "-";
                             webBrowser.Document.Window.ScrollTo(0, webBrowser.Document.Body.ScrollRectangle.Height);
-                            webBrowser.Document.GetElementById("csname").SetAttribute("value", "tfrain");
-                            webBrowser.Document.GetElementById("cspwd").SetAttribute("value", "djrain123@@@");
                             webBrowser.Document.GetElementById("la").Enabled = false;
                             webBrowser.Visible = true;
                             label_brand.Visible = false;
@@ -642,8 +640,8 @@ namespace TF_RTC_Grab
                 // handle request
             }
 
-            Properties.Settings.Default.______last_registered_player = "its369";
-            Properties.Settings.Default.Save();
+            //Properties.Settings.Default.______last_registered_player = "its369";
+            //Properties.Settings.Default.Save();
 
             label_player_last_registered.Text = "Last Registered: " + Properties.Settings.Default.______last_registered_player;
             // todo
