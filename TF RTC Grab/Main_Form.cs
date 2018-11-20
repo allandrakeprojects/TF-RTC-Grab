@@ -295,6 +295,7 @@ namespace TF_RTC_Grab
                     {
                         MessageBox.Show("No internet connection detected. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         __isClose = false;
+                        Application.Restart();
                         Environment.Exit(0);
                     }
                 }
@@ -304,7 +305,7 @@ namespace TF_RTC_Grab
         private void timer_Tick(object sender, EventArgs e)
         {
             label_status.Font = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
-            label_status.Location = new Point(0, 70);
+            label_status.Location = new Point(1, 70);
             DateTime start = DateTime.ParseExact(__start_time, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
             DateTime end = DateTime.ParseExact(__end_time, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
 
@@ -353,6 +354,14 @@ namespace TF_RTC_Grab
                     label_status.Text = timeRemaining.Seconds.ToString();
                     label_status.Visible = true;
                 }
+            }
+
+            if (label_status.Text.Contains("-"))
+            {
+                MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                __isClose = false;
+                Application.Restart();
+                Environment.Exit(0);
             }
         }
 
@@ -626,6 +635,7 @@ namespace TF_RTC_Grab
                 {
                     MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     __isClose = false;
+                    Application.Restart();
                     Environment.Exit(0);
                 }
                 else
@@ -672,6 +682,7 @@ namespace TF_RTC_Grab
                 {
                     MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     __isClose = false;
+                    Application.Restart();
                     Environment.Exit(0);
                 }
                 else
