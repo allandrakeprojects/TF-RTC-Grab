@@ -198,14 +198,6 @@ namespace TF_RTC_Grab
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
         }
-        private void label_status_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                ReleaseCapture();
-                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
-            }
-        }
         private void label_player_last_registered_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
