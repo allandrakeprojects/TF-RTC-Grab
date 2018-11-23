@@ -932,7 +932,10 @@ namespace TF_RTC_Grab
 
                     if (username != Properties.Settings.Default.______last_registered_player_deposit)
                     {
-                        player_info.Add(username + "*|*" + __player_ldd_deposit);
+                        if (__player_ldd_deposit != "-")
+                        {
+                            player_info.Add(username + "*|*" + __player_ldd_deposit);
+                        }
                     }
                     else
                     {
@@ -965,11 +968,8 @@ namespace TF_RTC_Grab
                                     }
                                 }
 
-                                if (_date_deposit != "-")
-                                {
-                                    ___InsertData_Deposit(_username, _date_deposit, __brand_code);
-                                    __count_deposit = 0;
-                                }
+                                ___InsertData_Deposit(_username, _date_deposit, __brand_code);
+                                __count_deposit = 0;
                             }
 
                             player_info.Clear();
