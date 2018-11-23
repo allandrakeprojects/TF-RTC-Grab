@@ -798,7 +798,7 @@ namespace TF_RTC_Grab
 
         private void ___PlayerLastRegistered()
         {
-            // update this when deploy
+            // update this when deployment
             // todo
             if (Properties.Settings.Default.______last_registered_player == "")
             {
