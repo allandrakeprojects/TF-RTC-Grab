@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -40,6 +39,7 @@ namespace TF_RTC_Grab
 
         private JObject __jo_deposit;
         private bool __isBreak_deposit = false;
+        private bool __isInsert_deposit = false;
         private int __secho_deposit;
         private int __total_page_deposit;
         private int __result_count_json_deposit;
@@ -267,7 +267,7 @@ namespace TF_RTC_Grab
         }
 
         // WebBrowser
-        private void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        private async void webBrowser_DocumentCompletedAsync(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             if (webBrowser.ReadyState == WebBrowserReadyState.Complete)
             {
@@ -315,9 +315,8 @@ namespace TF_RTC_Grab
                                 pictureBox_loader.Visible = true;
                                 label_player_last_registered.Visible = true;
                                 ___PlayerLastRegistered();
-                                ___GetPlayerListsRequest();
-                                Thread t = new Thread(delegate () { ___GetPlayerListsRequest_Deposit(); });
-                                t.Start();
+                                await ___GetPlayerListsRequest();
+                                ___GetPlayerListsRequest_Deposit();
                                 webBrowser.WebBrowserShortcutsEnabled = false;
                                 webBrowser.WebBrowserShortcutsEnabled = false;
                             }
@@ -335,7 +334,7 @@ namespace TF_RTC_Grab
         }
 
         // ------ Functions
-        private async void ___GetPlayerListsRequest()
+        private async Task ___GetPlayerListsRequest()
         {
             __isBreak = false;
 
@@ -424,7 +423,7 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                ___GetPlayerListsRequest();
+                await ___GetPlayerListsRequest();
             }
         }
 
@@ -565,13 +564,25 @@ namespace TF_RTC_Grab
                             player_info.Clear();
                         }
 
+                        timer.Start();
                         __isBreak = true;
                         break;
                     }
                 }
             }
+            
+        }
 
-            ___GetPlayerListsRequest();
+        private async void timer_TickAsync(object sender, EventArgs e)
+        {
+            timer.Stop();
+            await ___GetPlayerListsRequest();
+
+            if (__isInsert_deposit)
+            {
+                __isInsert_deposit = false;
+                ___GetPlayerListsRequest_Deposit();
+            }
         }
 
         private void ___InsertData(string username, string name, string date_register, string date_deposit, string contact, string email, string agent, string brand_code)
@@ -597,6 +608,8 @@ namespace TF_RTC_Grab
                         ["email"] = email,
                         ["agent"] = agent,
                         ["brand_code"] = brand_code,
+                        ["qq"] = "",
+                        ["wc"] = "",
                         ["token"] = token
                     };
 
@@ -651,6 +664,8 @@ namespace TF_RTC_Grab
                         ["email"] = email,
                         ["agent"] = agent,
                         ["brand_code"] = brand_code,
+                        ["qq"] = "",
+                        ["wc"] = "",
                         ["token"] = token
                     };
 
@@ -923,65 +938,103 @@ namespace TF_RTC_Grab
 
                 for (int ii = 0; ii < __result_count_json_deposit; ii++)
                 {
-                    Application.DoEvents();
+                    // check if username exist in temp file
+                    if (!File.Exists(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt"))
+                    {
+                        using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt", true, Encoding.UTF8))
+                        {
+                            file.WriteLine("test123*|*");
+                        }
+                    }
+
                     JToken username__id = __jo_deposit.SelectToken("$.aaData[" + ii + "][0]").ToString();
                     string username = Regex.Match(username__id.ToString(), "username=\\\"(.*?)\\\"").Groups[1].Value;
                     __player_id_deposit = Regex.Match(username__id.ToString(), "player=\\\"(.*?)\\\"").Groups[1].Value;
 
-                    await ___PlayerListLastDeposit_Deposit(__player_id_deposit);
+                    bool isInsert = false;
 
-                    if (username != Properties.Settings.Default.______last_registered_player_deposit)
+                    using (StreamReader sr = File.OpenText(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt"))
                     {
-                        if (__player_ldd_deposit != "-")
+
+                        string s = String.Empty;
+                        while ((s = sr.ReadLine()) != null)
                         {
-                            player_info.Add(username + "*|*" + __player_ldd_deposit);
+                            Application.DoEvents();
+
+                            if (s == username)
+                            {
+                                isInsert = true;
+                                break;
+                            }
+                            else
+                            {
+                                isInsert = false;
+                            }
                         }
                     }
-                    else
+
+                    if (!isInsert)
                     {
-                        if (player_info.Count != 0)
+                        await ___PlayerListLastDeposit_Deposit(__player_id_deposit);
+
+                        if (username != Properties.Settings.Default.______last_registered_player_deposit)
                         {
-                            player_info.Reverse();
-                            string player_info_get = String.Join(",", player_info);
-                            string[] values = player_info_get.Split(',');
-                            foreach (string value in values)
+                            if (__player_ldd_deposit != "-")
                             {
-                                Application.DoEvents();
-                                string[] values_inner = value.Split(new string[] { "*|*" }, StringSplitOptions.None);
-                                int count = 0;
-                                string _username = "";
-                                string _date_deposit = "";
-
-                                foreach (string value_inner in values_inner)
+                                player_info.Add(username + "*|*" + __player_ldd_deposit);
+                                // insert in temp file
+                                using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt", true, Encoding.UTF8))
                                 {
-                                    count++;
+                                    file.WriteLine(username);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (player_info.Count != 0)
+                            {
+                                player_info.Reverse();
+                                string player_info_get = String.Join(",", player_info);
+                                string[] values = player_info_get.Split(',');
+                                foreach (string value in values)
+                                {
+                                    Application.DoEvents();
+                                    string[] values_inner = value.Split(new string[] { "*|*" }, StringSplitOptions.None);
+                                    int count = 0;
+                                    string _username = "";
+                                    string _date_deposit = "";
 
-                                    // Username
-                                    if (count == 1)
+                                    foreach (string value_inner in values_inner)
                                     {
-                                        _username = value_inner;
+                                        count++;
+
+                                        // Username
+                                        if (count == 1)
+                                        {
+                                            _username = value_inner;
+                                        }
+                                        // Last Deposit Date
+                                        else if (count == 2)
+                                        {
+                                            _date_deposit = value_inner;
+                                        }
                                     }
-                                    // Last Deposit Date
-                                    else if (count == 2)
-                                    {
-                                        _date_deposit = value_inner;
-                                    }
+
+                                    ___InsertData_Deposit(_username, _date_deposit, __brand_code);
+                                    __count_deposit = 0;
                                 }
 
-                                ___InsertData_Deposit(_username, _date_deposit, __brand_code);
-                                __count_deposit = 0;
+                                player_info.Clear();
                             }
 
-                            player_info.Clear();
+                            __isBreak_deposit = true;
+                            break;
                         }
-
-                        __isBreak_deposit = true;
-                        break;
                     }
                 }
             }
 
-            ___GetPlayerListsRequest_Deposit();
+            __isInsert_deposit = true;
         }
 
         private async Task ___PlayerListLastDeposit_Deposit(string id)
