@@ -848,9 +848,7 @@ namespace TF_RTC_Grab
                 Properties.Settings.Default.______last_registered_player = "cjl88888";
                 Properties.Settings.Default.Save();
             }
-
-            Properties.Settings.Default.______last_registered_player = "cjl88888";
-            Properties.Settings.Default.Save();
+            
             Properties.Settings.Default.______last_registered_player_deposit = "cjl88888";
             Properties.Settings.Default.Save();
 
