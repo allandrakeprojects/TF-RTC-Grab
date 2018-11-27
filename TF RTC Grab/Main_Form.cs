@@ -628,7 +628,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendRTC", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/sendRTC", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
@@ -981,6 +981,7 @@ namespace TF_RTC_Grab
                         using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt", true, Encoding.UTF8))
                         {
                             file.WriteLine("test123*|*");
+                            file.Close();
                         }
                     }
 
@@ -1008,65 +1009,70 @@ namespace TF_RTC_Grab
                                 isInsert = false;
                             }
                         }
+                        sr.Close();
                     }
 
                     if (!isInsert)
                     {
                         await ___PlayerListLastDeposit_Deposit(__player_id_deposit);
+                    }
 
-                        if (username != Properties.Settings.Default.______last_registered_player_deposit)
+                    if (username != Properties.Settings.Default.______last_registered_player_deposit)
+                    {
+                        if (__player_ldd_deposit != "-")
                         {
-                            if (__player_ldd_deposit != "-")
+                            if (!isInsert)
                             {
                                 player_info.Add(username + "*|*" + __player_ldd_deposit);
-                                // insert in temp file
+
                                 using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt", true, Encoding.UTF8))
                                 {
                                     file.WriteLine(username);
+                                    file.Close();
                                 }
                             }
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (player_info.Count != 0)
                         {
-                            if (player_info.Count != 0)
+                            player_info.Reverse();
+                            string player_info_get = String.Join(",", player_info);
+                            string[] values = player_info_get.Split(',');
+                            foreach (string value in values)
                             {
-                                player_info.Reverse();
-                                string player_info_get = String.Join(",", player_info);
-                                string[] values = player_info_get.Split(',');
-                                foreach (string value in values)
+                                Application.DoEvents();
+                                string[] values_inner = value.Split(new string[] { "*|*" }, StringSplitOptions.None);
+                                int count = 0;
+                                string _username = "";
+                                string _date_deposit = "";
+
+                                foreach (string value_inner in values_inner)
                                 {
-                                    Application.DoEvents();
-                                    string[] values_inner = value.Split(new string[] { "*|*" }, StringSplitOptions.None);
-                                    int count = 0;
-                                    string _username = "";
-                                    string _date_deposit = "";
+                                    count++;
 
-                                    foreach (string value_inner in values_inner)
+                                    // Username
+                                    if (count == 1)
                                     {
-                                        count++;
-
-                                        // Username
-                                        if (count == 1)
-                                        {
-                                            _username = value_inner;
-                                        }
-                                        // Last Deposit Date
-                                        else if (count == 2)
-                                        {
-                                            _date_deposit = value_inner;
-                                        }
+                                        _username = value_inner;
                                     }
-
-                                    ___InsertData_Deposit(_username, _date_deposit, __brand_code);
-                                    __count_deposit = 0;
+                                    // Last Deposit Date
+                                    else if (count == 2)
+                                    {
+                                        _date_deposit = value_inner;
+                                    }
                                 }
 
-                                player_info.Clear();
+                                ___InsertData_Deposit(_username, _date_deposit, __brand_code);
+                                __count_deposit = 0;
                             }
 
-                            __isBreak_deposit = true;
-                            break;
+                            player_info.Clear();
                         }
+
+                        __isBreak_deposit = true;
+                        break;
                     }
                 }
             }
@@ -1117,7 +1123,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendRTCdep", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/sendRTCdep", "POST", data);
                 }
             }
             catch (Exception err)
@@ -1165,7 +1171,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendRTCdep", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/sendRTCdep", "POST", data);
                 }
             }
             catch (Exception err)
