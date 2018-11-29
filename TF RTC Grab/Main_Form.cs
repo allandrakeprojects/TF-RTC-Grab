@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -48,6 +49,7 @@ namespace TF_RTC_Grab
         private int __count_deposit = 0;
         private string __player_ldd_deposit;
         private string __player_id_deposit;
+        private bool __detectInsert_deposit = false;
 
         // Drag Header to Move
         [DllImport("user32.dll")]
@@ -319,11 +321,10 @@ namespace TF_RTC_Grab
                                 label_brand.Visible = true;
                                 pictureBox_loader.Visible = true;
                                 label_player_last_registered.Visible = true;
+                                webBrowser.WebBrowserShortcutsEnabled = false;
                                 ___PlayerLastRegistered();
                                 await ___GetPlayerListsRequest();
                                 ___GetPlayerListsRequest_Deposit();
-                                webBrowser.WebBrowserShortcutsEnabled = false;
-                                webBrowser.WebBrowserShortcutsEnabled = false;
                             }
                         }
                     }
@@ -424,7 +425,7 @@ namespace TF_RTC_Grab
                 JToken count = __jo.SelectToken("$.aaData");
                 __result_count_json = count.Count();
 
-                ___PlayerListAsync();
+                await ___PlayerListAsync();
             }
             catch (Exception err)
             {
@@ -432,7 +433,7 @@ namespace TF_RTC_Grab
             }
         }
 
-        private async void ___PlayerListAsync()
+        private async Task ___PlayerListAsync()
         {
             List<string> player_info = new List<string>();
 
@@ -467,19 +468,13 @@ namespace TF_RTC_Grab
                         await ___PlayerListLastDeposit(__player_id);
                         
                         player_info.Add(username + "*|*" + name + "*|*" + date_register + " " + date_time_register + "*|*" + __player_ldd + "*|*" + __playerlist_cn + "*|*" + __playerlist_ea + "*|*" + agent + "*|*" + __playerlist_qq);
+                        
+                        __playerlist_cn = "";
+                        __playerlist_ea = "";
+                        __playerlist_qq = "";
                     }
                     else
                     {
-                        if (!String.IsNullOrEmpty(__player_last_username.Trim()))
-                        {
-                            ___SavePlayerLastRegistered(__player_last_username);
-
-                            Invoke(new Action(() =>
-                            {
-                                label_player_last_registered.Text = "Last Registered: " + Properties.Settings.Default.______last_registered_player;
-                            }));
-                        }
-
                         // send to api
                         if (player_info.Count != 0)
                         {
@@ -516,25 +511,25 @@ namespace TF_RTC_Grab
                                     // Register Date
                                     else if (count == 3)
                                     {
-                                        if (value_inner == "-")
+                                        if (value_inner != "-")
                                         {
-                                            _date_register = "";
+                                            _date_register = value_inner;
                                         }
                                         else
                                         {
-                                            _date_register = value_inner;
+                                            _date_register = "";
                                         }
                                     }
                                     // Last Deposit Date
                                     else if (count == 4)
                                     {
-                                        if (value_inner == "-")
+                                        if (value_inner != "-")
                                         {
-                                            _date_deposit = "";
+                                            _date_deposit = value_inner;
                                         }
                                         else
                                         {
-                                            _date_deposit = value_inner;
+                                            _date_deposit = "";
                                         }
                                     }
                                     // Contact Number
@@ -568,17 +563,24 @@ namespace TF_RTC_Grab
                                 {
                                     file.WriteLine(_username + "*|*" + _name + "*|*" + _date_register + "*|*" + _date_deposit + "*|*" + _cn + "*|*" + _email + "*|*" + _agent + "*|*" + _qq + "*|*" + __brand_code);
                                 }
-                                ___InsertData(_username, _name, _date_register, _date_deposit, _cn, _email, _agent, _qq, __brand_code);
-                                __count = 0;
-
-                                __playerlist_cn = "";
-                                __playerlist_ea = "";
-                                __playerlist_qq = "";
+                                
+                                Thread t = new Thread(delegate () { ___InsertData(_username, _name, _date_register, _date_deposit, _cn, _email, _agent, _qq, __brand_code); });
+                                t.Start();
                             }
                             
                             player_info.Clear();
                         }
 
+                        if (!String.IsNullOrEmpty(__player_last_username.Trim()))
+                        {
+                            ___SavePlayerLastRegistered(__player_last_username);
+
+                            Invoke(new Action(() =>
+                            {
+                                label_player_last_registered.Text = "Last Registered: " + Properties.Settings.Default.______last_registered_player;
+                            }));
+                        }
+                        
                         timer.Start();
                         __isBreak = true;
                         break;
@@ -987,48 +989,63 @@ namespace TF_RTC_Grab
 
                     JToken username__id = __jo_deposit.SelectToken("$.aaData[" + ii + "][0]").ToString();
                     string username = Regex.Match(username__id.ToString(), "username=\\\"(.*?)\\\"").Groups[1].Value;
+
+                    if (username == Properties.Settings.Default.______last_registered_player)
+                    {
+                        __detectInsert_deposit = true;
+                    }
+
                     __player_id_deposit = Regex.Match(username__id.ToString(), "player=\\\"(.*?)\\\"").Groups[1].Value;
 
                     bool isInsert = false;
 
-                    using (StreamReader sr = File.OpenText(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt"))
+                    if (__detectInsert_deposit)
                     {
-
-                        string s = String.Empty;
-                        while ((s = sr.ReadLine()) != null)
+                        using (StreamReader sr = File.OpenText(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt"))
                         {
-                            Application.DoEvents();
 
-                            if (s == username)
+                            string s = String.Empty;
+                            while ((s = sr.ReadLine()) != null)
                             {
-                                isInsert = true;
-                                break;
+                                Application.DoEvents();
+
+                                if (s == username)
+                                {
+                                    isInsert = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    isInsert = false;
+                                }
                             }
-                            else
-                            {
-                                isInsert = false;
-                            }
+                            sr.Close();
                         }
-                        sr.Close();
-                    }
-
-                    if (!isInsert)
-                    {
-                        await ___PlayerListLastDeposit_Deposit(__player_id_deposit);
+                    
+                        if (!isInsert)
+                        {
+                            await ___PlayerListLastDeposit_Deposit(__player_id_deposit);
+                        }
                     }
 
                     if (username != Properties.Settings.Default.______last_registered_player_deposit)
                     {
                         if (__player_ldd_deposit != "-")
                         {
-                            if (!isInsert)
+                            if (__detectInsert_deposit)
                             {
-                                player_info.Add(username + "*|*" + __player_ldd_deposit);
-
-                                using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt", true, Encoding.UTF8))
+                                if (!isInsert)
                                 {
-                                    file.WriteLine(username);
-                                    file.Close();
+                                    if (__player_ldd_deposit != "-")
+                                    {
+                                        player_info.Add(username + "*|*" + __player_ldd_deposit);
+
+                                        using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt", true, Encoding.UTF8))
+                                        {
+                                            file.WriteLine(username);
+                                            file.Close();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1064,7 +1081,9 @@ namespace TF_RTC_Grab
                                     }
                                 }
 
-                                ___InsertData_Deposit(_username, _date_deposit, __brand_code);
+                                Thread t = new Thread(delegate () { ___InsertData_Deposit(_username, _date_deposit, __brand_code); });
+                                t.Start();
+                                
                                 __count_deposit = 0;
                             }
 
@@ -1072,6 +1091,7 @@ namespace TF_RTC_Grab
                         }
 
                         __isBreak_deposit = true;
+                        __detectInsert_deposit = false;
                         break;
                     }
                 }
