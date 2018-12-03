@@ -849,12 +849,15 @@ namespace TF_RTC_Grab
             // todo
             if (Properties.Settings.Default.______last_registered_player == "")
             {
-                Properties.Settings.Default.______last_registered_player = "tian0815";
+                Properties.Settings.Default.______last_registered_player = "a670808221";
                 Properties.Settings.Default.Save();
             }
-            
-            Properties.Settings.Default.______last_registered_player_deposit = "tian0815";
-            Properties.Settings.Default.Save();
+
+            if (Properties.Settings.Default.______last_registered_player_deposit == "")
+            {
+                Properties.Settings.Default.______last_registered_player_deposit = "a670808221";
+                Properties.Settings.Default.Save();
+            }
 
             label_player_last_registered.Text = "Last Registered: " + Properties.Settings.Default.______last_registered_player;
         }
@@ -1099,6 +1102,7 @@ namespace TF_RTC_Grab
                 }
             }
 
+            ___DepositLastRegistered();
             __isInsert_deposit = true;
         }
 
@@ -1220,56 +1224,49 @@ namespace TF_RTC_Grab
             }
         }
 
-        private void timer_deposit_last_registered_Tick(object sender, EventArgs e)
+        private void ___DepositLastRegistered()
         {
             string path = Path.GetTempPath() + @"\rtcgrab_tf_deposit.txt";
-            if (__isInsert_deposit)
+            if (label_player_last_registered.Text != "-" && label_player_last_registered.Text.Trim() != "")
             {
-                if (label_player_last_registered.Text != "-" && label_player_last_registered.Text.Trim() != "")
+                if (Properties.Settings.Default.______detect_deposit == "")
                 {
-                    if (Properties.Settings.Default.______detect_deposit == "")
+                    DateTime today = DateTime.Now;
+                    DateTime date = today.AddDays(1);
+                    Properties.Settings.Default.______detect_deposit = date.ToString("yyyy-MM-dd 23");
+                    Properties.Settings.Default.Save();
+                }
+                else
+                {
+                    DateTime today = DateTime.Now;
+                    if (Properties.Settings.Default.______detect_deposit == today.ToString("yyyy-MM-dd HH"))
                     {
-                        DateTime today = DateTime.Now;
-                        DateTime date = today.AddDays(1);
-                        Properties.Settings.Default.______detect_deposit = date.ToString("yyyy-MM-dd 23");
+                        Properties.Settings.Default.______detect_deposit = "";
+                        Properties.Settings.Default.______last_registered_player_deposit = label_player_last_registered.Text.Replace("Last Registered: ", "");
                         Properties.Settings.Default.Save();
+
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
                     }
                     else
                     {
-                        DateTime today = DateTime.Now;
-                        if (Properties.Settings.Default.______detect_deposit == today.ToString("yyyy-MM-dd HH"))
+                        string start_datetime = today.ToString("yyyy-MM-dd HH");
+                        DateTime start = DateTime.ParseExact(start_datetime, "yyyy-MM-dd HH", CultureInfo.InvariantCulture);
+
+                        string end_datetime = Properties.Settings.Default.______detect_deposit;
+                        DateTime end = DateTime.ParseExact(end_datetime, "yyyy-MM-dd HH", CultureInfo.InvariantCulture);
+
+                        if (start > end)
                         {
                             Properties.Settings.Default.______detect_deposit = "";
-                            Properties.Settings.Default.Save();
-
-                            Properties.Settings.Default.______last_registered_player_deposit = label_player_last_registered.Text;
+                            Properties.Settings.Default.______last_registered_player_deposit = label_player_last_registered.Text.Replace("Last Registered: ", "");
                             Properties.Settings.Default.Save();
 
                             if (File.Exists(path))
                             {
                                 File.Delete(path);
-                            }
-                        }
-                        else
-                        {
-                            string start_datetime = today.ToString("yyyy-MM-dd HH");
-                            DateTime start = DateTime.ParseExact(start_datetime, "yyyy-MM-dd HH", CultureInfo.InvariantCulture);
-
-                            string end_datetime = Properties.Settings.Default.______detect_deposit;
-                            DateTime end = DateTime.ParseExact(end_datetime, "yyyy-MM-dd HH", CultureInfo.InvariantCulture);
-
-                            if (start > end)
-                            {
-                                Properties.Settings.Default.______detect_deposit = "";
-                                Properties.Settings.Default.Save();
-
-                                Properties.Settings.Default.______last_registered_player_deposit = label_player_last_registered.Text;
-                                Properties.Settings.Default.Save();
-
-                                if (File.Exists(path))
-                                {
-                                    File.Delete(path);
-                                }
                             }
                         }
                     }
