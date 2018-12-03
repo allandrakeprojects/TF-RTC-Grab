@@ -568,8 +568,6 @@ namespace TF_RTC_Grab
                                 Thread t = new Thread(delegate () { ___InsertData(_username, _name, _date_register, _date_deposit, _cn, _email, _agent, _qq, __brand_code); });
                                 t.Start();
                             }
-                            
-                            player_info.Clear();
                         }
 
                         if (!String.IsNullOrEmpty(__player_last_username.Trim()))
@@ -581,7 +579,8 @@ namespace TF_RTC_Grab
                                 label_player_last_registered.Text = "Last Registered: " + Properties.Settings.Default.______last_registered_player;
                             }));
                         }
-                        
+
+                        player_info.Clear();
                         timer.Start();
                         __isBreak = true;
                         break;
@@ -1091,10 +1090,9 @@ namespace TF_RTC_Grab
                                 
                                 __count_deposit = 0;
                             }
-
-                            player_info.Clear();
                         }
 
+                        player_info.Clear();
                         __isBreak_deposit = true;
                         __detectInsert_deposit = false;
                         break;
