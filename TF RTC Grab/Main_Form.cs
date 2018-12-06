@@ -51,6 +51,7 @@ namespace TF_RTC_Grab
         private string __player_ldd_deposit;
         private string __player_id_deposit;
         private bool __detectInsert_deposit = false;
+        private bool __isLogin = false;
 
         // Drag Header to Move
         [DllImport("user32.dll")]
@@ -232,7 +233,7 @@ namespace TF_RTC_Grab
         // Click Close
         private void pictureBox_close_Click(object sender, EventArgs e)
         {
-            DialogResult dr = MessageBox.Show("Exit the program?", "TF", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult dr = MessageBox.Show("Exit the program?", "TF RTC Grab", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dr == DialogResult.Yes)
             {
                 __isClose = true;
@@ -251,7 +252,7 @@ namespace TF_RTC_Grab
         {
             if (!__isClose)
             {
-                DialogResult dr = MessageBox.Show("Exit the program?", "TF", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult dr = MessageBox.Show("Exit the program?", "TF RTC Grab", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dr == DialogResult.No)
                 {
                     e.Cancel = true;
@@ -290,12 +291,13 @@ namespace TF_RTC_Grab
                                 isPlaying = true;
                             }
 
+                            __isLogin = false;
                             timer.Stop();
                             __isStart = false;
                             label_player_last_registered.Text = "-";
                             webBrowser.Document.Window.ScrollTo(0, webBrowser.Document.Body.ScrollRectangle.Height);
-                            webBrowser.Document.GetElementById("csname").SetAttribute("value", "central12");
-                            webBrowser.Document.GetElementById("cspwd").SetAttribute("value", "abc123");
+                            webBrowser.Document.GetElementById("csname").SetAttribute("value", "tfrtcgrab");
+                            webBrowser.Document.GetElementById("cspwd").SetAttribute("value", "rg123@@@");
                             webBrowser.Document.GetElementById("la").Enabled = false;
                             webBrowser.Visible = true;
                             label_brand.Visible = false;
@@ -305,7 +307,7 @@ namespace TF_RTC_Grab
 
                             if (isPlaying)
                             {
-                                DialogResult dr = MessageBox.Show("You've been logout please login again.", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                DialogResult dr = MessageBox.Show("You've been logout please login again.", "TF RTC Grab", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 if (dr == DialogResult.OK)
                                 {
                                     player.Stop();
@@ -315,6 +317,8 @@ namespace TF_RTC_Grab
 
                         if (webBrowser.Url.ToString().Equals("http://cs.tianfa86.org/player/list") || webBrowser.Url.ToString().Equals("http://cs.tianfa86.org/site/index") || webBrowser.Url.ToString().Equals("http://cs.tianfa86.org/player/online") || webBrowser.Url.ToString().Equals("http://cs.tianfa86.org/message/platform"))
                         {
+                            __isLogin = true;
+                            
                             if (!__isStart)
                             {
                                 __isStart = true;
@@ -331,7 +335,7 @@ namespace TF_RTC_Grab
                     }
                     catch (Exception err)
                     {
-                        MessageBox.Show("No internet connection detected. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("No internet connection detected. Please call IT Support, thank you!", "TF RTC Grab", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         __isClose = false;
                         Application.Restart();
                         Environment.Exit(0);
@@ -430,7 +434,10 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                await ___GetPlayerListsRequest();
+                if (__isLogin)
+                {
+                    await ___GetPlayerListsRequest();
+                }
             }
         }
 
@@ -556,11 +563,11 @@ namespace TF_RTC_Grab
                                 }
 
                                 // ----- Insert Data
-                                using (StreamWriter file = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\test_tf.txt", true, Encoding.UTF8))
-                                {
-                                    file.WriteLine(_username + "*|*" + _name + "*|*" + _date_register + "*|*" + _date_deposit + "*|*" + _cn + "*|*" + _email + "*|*" + _agent + "*|*" + _qq + "*|*" + __brand_code);
-                                }
-                                using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\test_tf.txt", true, Encoding.UTF8))
+                                //using (StreamWriter file = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\rtcgrab_tf.txt", true, Encoding.UTF8))
+                                //{
+                                //    file.WriteLine(_username + "*|*" + _name + "*|*" + _date_register + "*|*" + _date_deposit + "*|*" + _cn + "*|*" + _email + "*|*" + _agent + "*|*" + _qq + "*|*" + __brand_code);
+                                //}
+                                using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_tf.txt", true, Encoding.UTF8))
                                 {
                                     file.WriteLine(_username + "*|*" + _name + "*|*" + _date_register + "*|*" + _date_deposit + "*|*" + _cn + "*|*" + _email + "*|*" + _agent + "*|*" + _qq + "*|*" + __brand_code);
                                 }
@@ -636,24 +643,27 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                __count++;
-                if (__count == 5)
+                if (__isLogin)
                 {
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
-                    player.PlayLooping();
-
-                    DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (dr == DialogResult.OK)
+                    __count++;
+                    if (__count == 5)
                     {
-                        player.Stop();
-                    }
+                        System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
+                        player.PlayLooping();
 
-                    __isClose = false;
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    ____InsertData2(username, name, date_register, date_deposit, contact, email, agent, qq, brand_code);
+                        DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF RTC Grab", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (dr == DialogResult.OK)
+                        {
+                            player.Stop();
+                        }
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ____InsertData2(username, name, date_register, date_deposit, contact, email, agent, qq, brand_code);
+                    }
                 }
             }
         }
@@ -692,24 +702,27 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                __count++;
-                if (__count == 5)
+                if (__isLogin)
                 {
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
-                    player.PlayLooping();
-
-                    DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (dr == DialogResult.OK)
+                    __count++;
+                    if (__count == 5)
                     {
-                        player.Stop();
-                    }
+                        System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
+                        player.PlayLooping();
 
-                    __isClose = false;
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    ___InsertData(username, name, date_register, date_deposit, contact, email, agent, qq, brand_code);
+                        DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF RTC Grab", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (dr == DialogResult.OK)
+                        {
+                            player.Stop();
+                        }
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___InsertData(username, name, date_register, date_deposit, contact, email, agent, qq, brand_code);
+                    }
                 }
             }
         }
@@ -816,7 +829,10 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                await ___PlayerListContactNumberEmailAsync(__player_id);
+                if (__isLogin)
+                {
+                    await ___PlayerListContactNumberEmailAsync(__player_id);
+                }
             }
         }
 
@@ -838,7 +854,10 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                await ___PlayerListLastDeposit(__player_id);
+                if (__isLogin)
+                {
+                    await ___PlayerListLastDeposit(__player_id);
+                }
             }
         }
 
@@ -848,13 +867,13 @@ namespace TF_RTC_Grab
             // todo
             if (Properties.Settings.Default.______last_registered_player == "")
             {
-                Properties.Settings.Default.______last_registered_player = "a670808221";
+                Properties.Settings.Default.______last_registered_player = "w8245";
                 Properties.Settings.Default.Save();
             }
 
             if (Properties.Settings.Default.______last_registered_player_deposit == "")
             {
-                Properties.Settings.Default.______last_registered_player_deposit = "a670808221";
+                Properties.Settings.Default.______last_registered_player_deposit = "w8245";
                 Properties.Settings.Default.Save();
             }
 
@@ -916,10 +935,10 @@ namespace TF_RTC_Grab
                 var deserializeObject_gettotal = JsonConvert.DeserializeObject(responsebody_gettotatal);
                 JObject jo_gettotal = JObject.Parse(deserializeObject_gettotal.ToString());
                 JToken jt_gettotal = jo_gettotal.SelectToken("$.iTotalRecords");
-                double get_total_records_fy = 0;
-                get_total_records_fy = double.Parse(jt_gettotal.ToString());
+                double get_total_records_tf = 0;
+                get_total_records_tf = double.Parse(jt_gettotal.ToString());
 
-                double result_total_records = get_total_records_fy / __display_length;
+                double result_total_records = get_total_records_tf / __display_length;
 
                 if (result_total_records.ToString().Contains("."))
                 {
@@ -963,7 +982,10 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                ___GetPlayerListsRequest_Deposit();
+                if (__isLogin)
+                {
+                    ___GetPlayerListsRequest_Deposit();
+                }
             }
         }
 
@@ -1116,13 +1138,16 @@ namespace TF_RTC_Grab
                 string current_date = DateTime.Now.ToString("yyyy-MM-dd");
                 string result_gettotal_responsebody = await wc.DownloadStringTaskAsync("http://cs.tianfa86.org/player/playerDeposit?uid=" + id + "&start=2016-06-15&end=");
                 var deserializeObject = JsonConvert.DeserializeObject(result_gettotal_responsebody);
-                JObject jo_fy_last_deposit = JObject.Parse(deserializeObject.ToString());
-                JToken last_deposit = jo_fy_last_deposit.SelectToken("$.last");
+                JObject jo_tf_last_deposit = JObject.Parse(deserializeObject.ToString());
+                JToken last_deposit = jo_tf_last_deposit.SelectToken("$.last");
                 __player_ldd_deposit = last_deposit.ToString();
             }
             catch (Exception err)
             {
-                await ___PlayerListLastDeposit_Deposit(__player_id_deposit);
+                if (__isLogin)
+                {
+                    await ___PlayerListLastDeposit_Deposit(__player_id_deposit);
+                }
             }
         }
 
@@ -1152,24 +1177,27 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                __count_deposit++;
-                if (__count_deposit == 5)
+                if (__isLogin)
                 {
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
-                    player.PlayLooping();
-
-                    DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (dr == DialogResult.OK)
+                    __count_deposit++;
+                    if (__count_deposit == 5)
                     {
-                        player.Stop();
-                    }
+                        System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
+                        player.PlayLooping();
 
-                    __isClose = false;
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    ___InsertData2_Deposit(username, last_deposit_date, brand);
+                        DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF RTC Grab", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (dr == DialogResult.OK)
+                        {
+                            player.Stop();
+                        }
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___InsertData2_Deposit(username, last_deposit_date, brand);
+                    }
                 }
             }
         }
@@ -1200,24 +1228,27 @@ namespace TF_RTC_Grab
             }
             catch (Exception err)
             {
-                __count_deposit++;
-                if (__count_deposit == 5)
+                if (__isLogin)
                 {
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
-                    player.PlayLooping();
-
-                    DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (dr == DialogResult.OK)
+                    __count_deposit++;
+                    if (__count_deposit == 5)
                     {
-                        player.Stop();
-                    }
+                        System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.rtc_grab);
+                        player.PlayLooping();
 
-                    __isClose = false;
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    ___InsertData_Deposit(username, last_deposit_date, brand);
+                        DialogResult dr = MessageBox.Show("There's a problem to the server. Please call IT Support, thank you!", "TF RTC Grab", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (dr == DialogResult.OK)
+                        {
+                            player.Stop();
+                        }
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___InsertData_Deposit(username, last_deposit_date, brand);
+                    }
                 }
             }
         }
