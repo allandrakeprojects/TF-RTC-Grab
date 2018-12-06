@@ -62,6 +62,10 @@ namespace TF_RTC_Grab
         public const int HT_CAPTION = 0x2;
         // ----- Drag Header to Move
 
+        // Mute Sounds
+        [DllImport("winmm.dll")]
+        public static extern int waveOutSetVolume(IntPtr h, uint dwVolume);
+
         // Form Shadow
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
         private static extern IntPtr CreateRoundRectRgn
@@ -269,6 +273,7 @@ namespace TF_RTC_Grab
         // Form Load
         private void Main_Form_Load(object sender, EventArgs e)
         {
+            waveOutSetVolume(IntPtr.Zero, 0);
             webBrowser.Navigate("http://cs.tianfa86.org/account/login");
         }
 
