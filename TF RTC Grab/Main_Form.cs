@@ -283,6 +283,11 @@ namespace TF_RTC_Grab
             webBrowser.Navigate("http://cs.tianfa86.org/account/login");
         }
 
+        static int LineNumber([System.Runtime.CompilerServices.CallerLineNumber] int lineNumber = 0)
+        {
+            return lineNumber;
+        }
+        
         // WebBrowser
         private async void webBrowser_DocumentCompletedAsync(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
@@ -299,8 +304,8 @@ namespace TF_RTC_Grab
                             if (__isStart)
                             {
                                 string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
-                                SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>The application have been logout, please re-login again.</b></body></html>");
-                                SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>The application have been logout, please re-login again.</b></body></html>");
+                                SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>The application have been logout, please re-login again.</b></body></html>");
+                                SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>The application have been logout, please re-login again.</b></body></html>");
                             }
 
                             __isLogin = false;
@@ -652,8 +657,8 @@ namespace TF_RTC_Grab
                     if (__count == 5)
                     {
                         string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
-                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
+                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
 
                         __isClose = false;
                         Environment.Exit(0);
@@ -706,9 +711,9 @@ namespace TF_RTC_Grab
                     if (__count == 5)
                     {
                         string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
-                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-
+                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
+                        
                         __isClose = false;
                         Environment.Exit(0);
                     }
@@ -1167,9 +1172,9 @@ namespace TF_RTC_Grab
                     if (__count_deposit == 5)
                     {
                         string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
-                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-
+                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
+                        
                         __isClose = false;
                         Environment.Exit(0);
                     }
@@ -1213,9 +1218,9 @@ namespace TF_RTC_Grab
                     if (__count_deposit == 5)
                     {
                         string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
-                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-
+                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
+                        
                         __isClose = false;
                         Environment.Exit(0);
                     }
@@ -1277,8 +1282,6 @@ namespace TF_RTC_Grab
             }
         }
 
-
-
         private void SendEmail(string get_message)
         {
             try
@@ -1286,9 +1289,9 @@ namespace TF_RTC_Grab
                 int port = 587;
                 string host = "smtp.gmail.com";
                 string username = "drake@18tech.com";
-                string password = "Wcfajmeojnapa1";
+                string password = "@ccess123418tech";
                 string mailFrom = "noreply@mail.com";
-                string mailTo = "it@18tech.com";
+                string mailTo = "drake@18tech.com";
                 string mailTitle = "TF RTC Grab";
                 string mailMessage = get_message;
 
@@ -1329,9 +1332,9 @@ namespace TF_RTC_Grab
                 int port = 587;
                 string host = "smtp.gmail.com";
                 string username = "drake@18tech.com";
-                string password = "Wcfajmeojnapa1";
+                string password = "@ccess123418tech";
                 string mailFrom = "noreply@mail.com";
-                string mailTo = "allandulay69@gmail.com";
+                string mailTo = "it@18tech.com";
                 string mailTitle = "TF RTC Grab";
                 string mailMessage = get_message;
 
@@ -1403,9 +1406,9 @@ namespace TF_RTC_Grab
                     if (__count == 5)
                     {
                         string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
-                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-
+                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
+                        
                         __isClose = false;
                         Environment.Exit(0);
                     }
@@ -1455,9 +1458,9 @@ namespace TF_RTC_Grab
                     if (__count == 5)
                     {
                         string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
-                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robisons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
-
+                        SendEmail("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        SendEmail2("<html><body>Brand: <font color='#9A0000'>-----TF-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Message: <b>There's a problem to the server, please re-open the application.</b></body></html>");
+                        
                         __isClose = false;
                         Environment.Exit(0);
                     }
