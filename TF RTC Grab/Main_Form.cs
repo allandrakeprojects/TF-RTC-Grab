@@ -1522,7 +1522,7 @@ namespace TF_RTC_Grab
         private int __get_ii_mb = 1;
         private int __get_ii_display_mb = 1;
         private int __pages_count_mb = 0;
-        private string __shared_path = "\\\\192.168.10.22\\ssi-reporting";
+        private string __shared_path = "\\\\192.168.10.22\\ssi-reporting\\";
         private string __file_name = "";
         private string __task_id = "";
         StringBuilder __csv_mb = new StringBuilder();
@@ -1779,10 +1779,10 @@ namespace TF_RTC_Grab
         {
             try
             {
-                string _current_date = DateTime.Now.ToString("yyyy-MM-dd");
-                __file_name = __brand_code + "_" + _current_date;
-                string _folder_path_result = "C:\\Projects\\zeus\\uploads\\Balance\\" + __brand_code + "_" + _current_date + ".txt";
-                string _folder_path_result_xlsx = "C:\\Projects\\zeus\\uploads\\Balance\\" + __brand_code + "_" + _current_date + ".xlsx";
+                string _current_datetime = DateTime.Now.ToString("yyyy-MM-ddHHmm");
+                __file_name = __brand_code + "_" + _current_datetime;
+                string _folder_path_result = "C:\\Projects\\zeus\\uploads\\Balance\\" + __brand_code + "_" + _current_datetime + ".txt";
+                string _folder_path_result_xlsx = "C:\\Projects\\zeus\\uploads\\Balance\\" + __brand_code + "_" + _current_datetime + ".xlsx";
 
                 if (File.Exists(_folder_path_result))
                 {
@@ -1866,10 +1866,6 @@ namespace TF_RTC_Grab
 
                 // send
                 ___SetTaskStatus(__task_id, __file_name);
-
-                __file_name = "";
-                __task_id = "";
-                timer_mb_detect.Start();
             }
             catch (Exception err)
             {
@@ -1928,8 +1924,80 @@ namespace TF_RTC_Grab
                     {
                         if (webBrowser.Url.ToString() != "http://cs.tianfa86.org/account/login")
                         {
-                            timer_mb_detect.Stop();
                             // start
+                            timer_mb_detect.Stop();
+                            __UpdateTaskStatus();
+                            __GetMABListsAsync();
+                        }
+                        else
+                        {
+                            timer_mb_detect.Start();
+                        }
+                    }
+                    else
+                    {
+                        timer_mb_detect.Start();
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __count++;
+                    if (__count == 5)
+                    {
+                        string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendEmail("<html><body>Brand: <font color='" + __brand_color + "'>-----" + __brand_code + "-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        __send = 0;
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        ___GetTaskStatus2();
+                    }
+                }
+            }
+        }
+
+        private void ___GetTaskStatus2()
+        {
+            try
+            {
+                timer_mb_detect.Stop();
+                string password = __brand_code + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://zeus2.ssimakati.com:8080/API/getBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+                    var deserializeObject = JsonConvert.DeserializeObject(responseInString);
+                    JObject jo_mb = JObject.Parse(deserializeObject.ToString());
+                    JToken status = jo_mb.SelectToken("$.status");
+                    JToken task_id = jo_mb.SelectToken("$.task_id");
+                    __task_id = task_id.ToString();
+
+                    if (status.ToString() == "1")
+                    {
+                        if (webBrowser.Url.ToString() != "http://cs.tianfa86.org/account/login")
+                        {
+                            // start
+                            timer_mb_detect.Stop();
+                            __UpdateTaskStatus();
                             __GetMABListsAsync();
                         }
                         else
@@ -1989,6 +2057,10 @@ namespace TF_RTC_Grab
 
                     var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/setBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
+
+                    __file_name = "";
+                    __task_id = "";
+                    timer_mb_detect.Start();
                 }
             }
             catch (Exception err)
@@ -2036,6 +2108,10 @@ namespace TF_RTC_Grab
 
                     var response = wb.UploadValues("http://zeus2.ssimakati.com:8080/API/setBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
+
+                    __file_name = "";
+                    __task_id = "";
+                    timer_mb_detect.Start();
                 }
             }
             catch (Exception err)
@@ -2056,6 +2132,100 @@ namespace TF_RTC_Grab
                     else
                     {
                         ___SetTaskStatus(task_id, file_name);
+                    }
+                }
+            }
+        }
+
+        private void __UpdateTaskStatus()
+        {
+            try
+            {
+                string password = __brand_code + __task_id + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["task_id"] = __task_id,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/updBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __count++;
+                    if (__count == 5)
+                    {
+                        string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendEmail("<html><body>Brand: <font color='" + __brand_color + "'>-----" + __brand_code + "-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        __send = 0;
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        __UpdateTaskStatus2();
+                    }
+                }
+            }
+        }
+
+        private void __UpdateTaskStatus2()
+        {
+            try
+            {
+                string password = __brand_code + __task_id + "youdieidie";
+                byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
+                byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+                string token = BitConverter.ToString(hash)
+                   .Replace("-", string.Empty)
+                   .ToLower();
+
+                using (var wb = new WebClient())
+                {
+                    var data = new NameValueCollection
+                    {
+                        ["brand_code"] = __brand_code,
+                        ["task_id"] = __task_id,
+                        ["token"] = token
+                    };
+
+                    var response = wb.UploadValues("http://zeus2.ssimakati.com:8080/API/updBalanceTaskStatus", "POST", data);
+                    string responseInString = Encoding.UTF8.GetString(response);
+                }
+            }
+            catch (Exception err)
+            {
+                if (__isLogin)
+                {
+                    __count++;
+                    if (__count == 5)
+                    {
+                        string datetime = DateTime.Now.ToString("dd MMM HH:mm:ss");
+                        SendITSupport("There's a problem to the server, please re-open the application.");
+                        SendEmail("<html><body>Brand: <font color='" + __brand_color + "'>-----" + __brand_code + "-----</font><br/>IP: 192.168.10.252<br/>Location: Robinsons Summit Office<br/>Date and Time: [" + datetime + "]<br/>Line Number: " + LineNumber() + "<br/>Message: <b>" + err.ToString() + "</b></body></html>");
+                        __send = 0;
+
+                        __isClose = false;
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        __UpdateTaskStatus();
                     }
                 }
             }
