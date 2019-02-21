@@ -713,7 +713,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/sendRTC", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendRTC", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
 
                     using (StreamWriter file = new StreamWriter(Path.GetTempPath() + @"\rtcgrab_fy.txt", true, Encoding.UTF8))
@@ -1241,7 +1241,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/sendRTCdep", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendRTCdep", "POST", data);
                 }
             }
             catch (Exception err)
@@ -1288,7 +1288,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/sendRTCdep", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/sendRTCdep", "POST", data);
                 }
             }
             catch (Exception err)
@@ -1463,7 +1463,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var result = wb.UploadValues("http://zeus.ssimakati.com:8080/API/lastRTCrecord", "POST", data);
+                    var result = wb.UploadValues("http://zeus.ssitex.com:8080/API/lastRTCrecord", "POST", data);
                     string responsebody = Encoding.UTF8.GetString(result);
                     var deserializeObject = JsonConvert.DeserializeObject(responsebody);
                     JObject jo = JObject.Parse(deserializeObject.ToString());
@@ -1974,7 +1974,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/getBalanceTaskStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/getBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                     var deserializeObject = JsonConvert.DeserializeObject(responseInString);
                     JObject jo_mb = JObject.Parse(deserializeObject.ToString());
@@ -2045,7 +2045,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus2.ssimakati.com:8080/API/getBalanceTaskStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus2.ssitex.com:8080/API/getBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                     var deserializeObject = JsonConvert.DeserializeObject(responseInString);
                     JObject jo_mb = JObject.Parse(deserializeObject.ToString());
@@ -2117,7 +2117,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/setBalanceTaskStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/setBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
 
                     __file_name = "";
@@ -2168,7 +2168,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus2.ssimakati.com:8080/API/setBalanceTaskStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus2.ssitex.com:8080/API/setBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
 
                     __file_name = "";
@@ -2219,7 +2219,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/updBalanceTaskStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/updBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
@@ -2266,7 +2266,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus2.ssimakati.com:8080/API/updBalanceTaskStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus2.ssitex.com:8080/API/updBalanceTaskStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
@@ -2369,7 +2369,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus.ssimakati.com:8080/API/updateAppStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus.ssitex.com:8080/API/updateAppStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
@@ -2418,7 +2418,7 @@ namespace TF_RTC_Grab
                         ["token"] = token
                     };
 
-                    var response = wb.UploadValues("http://zeus2.ssimakati.com:8080/API/updateAppStatus", "POST", data);
+                    var response = wb.UploadValues("http://zeus2.ssitex.com:8080/API/updateAppStatus", "POST", data);
                     string responseInString = Encoding.UTF8.GetString(response);
                 }
             }
